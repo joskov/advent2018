@@ -44,7 +44,7 @@ TArray<FString> ADayBase::LoadInputLines()
 {
 	TArray<FString> Strings;
 
-	FFileHelper::LoadANSITextFileToStrings(*(FPaths::GameDir() + InputFileName), NULL, Strings);
+	FFileHelper::LoadANSITextFileToStrings(*(FPaths::ProjectDir() + InputFileName), NULL, Strings);
 
 	// Pops last element if it's empty.
 	if (Strings.Num() > 0 && Strings.Last().IsEmpty())
@@ -53,5 +53,29 @@ TArray<FString> ADayBase::LoadInputLines()
 	}
 	
 	return Strings;
+}
+
+
+/*
+template<class K, class V>
+TPair<K, V> ADayBase::GetFirstPair(TMap<K, V> Map)
+{
+	TArray<K> SleepTotalsKeys;
+	TArray<V> SleepTotalsValues;
+	SleepTotals.GetKeys(SleepTotalsKeys);
+	SleepTotals.GetValues(SleepTotalsValues);
+	return TPair<K, V>(SleepTotalsKeys[0], SleepTotalsValues[0]);
+}
+*/
+
+int32 ADayBase::GetFirstKey(TMap<int32, int32> Map)
+{
+	TTuple<int32, int32> Result;
+	for (auto Pair : Map)
+	{
+		Result = Pair;
+		break;
+	}
+	return Result.Key;
 }
 

@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "DayBase.generated.h"
 
+struct FIntIntPair
+{
+	int32 A;
+	int32 B;
+
+	FIntIntPair(int32 A, int32 B) : A(A), B(B) {};
+};
+
 UCLASS()
 class AOC2018_API ADayBase : public AActor
 {
@@ -31,7 +39,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = Input)
 	TArray<FString> LoadInputLines();
 
+	// template<class K, class V>
+	// static TPair<K, V> GetFirstPair(TMap<K, V> Map);
+	// TODO: refactor to a template
+	static int32 GetFirstKey(TMap<int32, int32> Map);
+
 protected:
 	FString InputFileName = FString("Input/input01.txt");
-	
+
 };

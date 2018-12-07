@@ -16,52 +16,59 @@ int ADay04::FindResultA()
 {
 	auto Lines = LoadInputLines();
 	auto Logs = LogsFromLines(Lines);
-	Logs.Sort();
-
 	
 	TMap<int32, int32> SleepTotals;
 	TMap<int32, TArray<FSleep>> SleepLogs;
 	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
-	SleepTotals.ValueSort([](int a, int b) -> bool { return a > b; });
 
-	// TODO: refactor to get the top value
-	TPair<int32, int32> TopPair;
-	for (auto Pair : SleepTotals)
-	{
-		TopPair = Pair;
-		break;
-	}
+	auto TopKey = ADayBase::GetFirstKey(SleepTotals);
+	if (!ensure(SleepLogs.Contains(TopKey))) { return 0; }
 
-	TMap<int32, int32> MinutesList;
-	verify(SleepLogs.Contains(TopPair.Key));
-
-	auto TopKey = TopPair.Key;
-	for (auto SleepLog : SleepLogs[TopKey])
-	{
-		for (auto Minute = SleepLog.StartMinute; Minute < SleepLog.EndMinute; Minute++)
-		{
-			auto OldMinute = MinutesList.FindOrAdd(Minute);
-			MinutesList.Add(Minute, OldMinute + 1);
-		}
-	}
-
-	MinutesList.ValueSort([](int a, int b) -> bool { return a > b; });
-	for (auto MinutePair : MinutesList)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Key: %d, Value: %d"), MinutePair.Key, MinutePair.Value);
-
-	}
-	
 	auto FilteredSleepLogs = SleepLogs[TopKey];
-	TArray<int32> MinutesKeys;
-	MinutesList.GetKeys(MinutesKeys);
-	auto MaxMinuteKey = MinutesKeys[0];
+	auto MinutesList = GetMinutesList(FilteredSleepLogs);
+	auto MaxMinuteKey = ADayBase::GetFirstKey(MinutesList);
 
-	UE_LOG(LogTemp, Warning, TEXT("TopKey: %d. TopValue: %d. MaxMinute: %d."), TopKey, TopPair.Value, MaxMinuteKey);
+	UE_LOG(LogTemp, Warning, TEXT("TopKey: %d. MaxMinute: %d."), TopKey, MaxMinuteKey);
 
 	UE_LOG(LogTemp,  Warning, TEXT("Result A: %d"), MaxMinuteKey * TopKey);
 
 	return 0;
+}
+
+int ADay04::FindResultB()
+{
+	auto Lines = LoadInputLines();
+	auto Logs = LogsFromLines(Lines);
+
+	TMap<int32, int32> SleepTotals; // We don't need them here
+	TMap<int32, TArray<FSleep>> SleepLogs;
+	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
+
+	TTuple<int32, int32> CurrentBest;
+	int32 CurrentBestID;
+	for (auto SleepLog : SleepLogs)
+	{
+		auto MaxMinute = GetMaxMinute(SleepLog.Value);
+		UE_LOG(LogTemp, Warning, TEXT("Guard #%d. MaxMinute: %d. MaxTimes: %d."), SleepLog.Key, MaxMinute.Key, MaxMinute.Value);
+
+		if (MaxMinute.Value > CurrentBest.Value)
+		{
+			CurrentBest = MaxMinute;
+			CurrentBestID = SleepLog.Key;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Result B: %d"), CurrentBest.Key * CurrentBestID);
+
+	return 0;
+}
+
+TTuple<int32, int32> ADay04::GetMaxMinute(TArray<FSleep> SleepLog)
+{
+	auto MinutesList = GetMinutesList(SleepLog);
+	auto FirstKey = ADayBase::GetFirstKey(MinutesList);
+	auto MaxTuple = TTuple<int32, int32>(FirstKey, *MinutesList.Find(FirstKey));
+	return MaxTuple;
 }
 
 TArray<FGuardLog> ADay04::LogsFromLines(TArray<FString> Lines)
@@ -75,6 +82,7 @@ TArray<FGuardLog> ADay04::LogsFromLines(TArray<FString> Lines)
 		Log.Log = Line;
 		Logs.Add(Log);
 	}
+	Logs.Sort();
 	return Logs;
 }
 
@@ -84,7 +92,7 @@ void ADay04::GetSleepLogs(TMap<int32, int32>& OutSleepTotals, TMap<int32, TArray
 	FGuardTime FallAsleepTime;
 	for (auto LogRecord : Logs)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *LogRecord.Log);
+		// UE_LOG(LogTemp, Warning, TEXT("%s"), *LogRecord.Log);
 
 		if (LogRecord.Log.Contains("begins shift"))
 		{
@@ -116,12 +124,30 @@ void ADay04::GetSleepLogs(TMap<int32, int32>& OutSleepTotals, TMap<int32, TArray
 			}
 		}
 	}
+
+	OutSleepTotals.ValueSort([](int a, int b) -> bool { return a > b; });
 }
 
-int ADay04::FindResultB()
+TMap<int32, int32> ADay04::GetMinutesList(TArray<FSleep> SleepLogs)
 {
-	auto Lines = LoadInputLines();
-	return 0;
+	TMap<int32, int32> MinutesList;
+	for (auto SleepLog : SleepLogs)
+	{
+		for (auto Minute = SleepLog.StartMinute; Minute < SleepLog.EndMinute; Minute++)
+		{
+			auto OldMinute = MinutesList.FindOrAdd(Minute);
+			MinutesList.Add(Minute, OldMinute + 1);
+		}
+	}
+
+	MinutesList.ValueSort([](int a, int b) -> bool { return a > b; });
+
+	for (auto MinutePair : MinutesList)
+	{
+		// UE_LOG(LogTemp, Warning, TEXT("Key: %d, Value: %d"), MinutePair.Key, MinutePair.Value);
+	}
+
+	return MinutesList;
 }
 
 FGuardTime ADay04::ParseTime(FString Line)

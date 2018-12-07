@@ -97,7 +97,11 @@ protected:
 	FGuardTime ParseTime(FString Line);
 
 	TArray<FGuardLog> LogsFromLines(TArray<FString> Lines);
-
+	
 	void GetSleepLogs(TMap<int32, int32>& OutSleepTotals, TMap<int32, TArray<FSleep>>& OutSleepLogs, TArray<FGuardLog> Logs);
+
+	TMap<int32, int32> GetMinutesList(TArray<FSleep> SleepLog);
+
+	TTuple<int32, int32> GetMaxMinute(TArray<FSleep> SleepLog);
 
 };
