@@ -11,7 +11,28 @@ ADay03::ADay03()
 	InputFileName = FString("Input/input03.txt");
 }
 
-int ADay03::FindResultA()
+FClaim ADay03::ParseLine(FString Line)
+{
+	FClaim Result;
+
+	FRegexPattern Pattern(TEXT("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)"));
+	FRegexMatcher Matcher(Pattern, Line);
+
+	if (Matcher.FindNext())
+	{
+		auto ID = FCString::Atoi(*Matcher.GetCaptureGroup(1));
+		auto Left = FCString::Atoi(*Matcher.GetCaptureGroup(2));
+		auto Top = FCString::Atoi(*Matcher.GetCaptureGroup(3));
+		auto Width = FCString::Atoi(*Matcher.GetCaptureGroup(4));
+		auto Height = FCString::Atoi(*Matcher.GetCaptureGroup(5));
+		Result.ID = ID;
+		Result.Rectangle = FIntRect(Left, Top, Left + Width, Top + Height);
+	}
+
+	return Result;
+}
+
+FString ADay03::CalculateResultA()
 {
 	auto Lines = LoadInputLines();
 	TArray<FClaim> AddedRectangles;
@@ -48,10 +69,10 @@ int ADay03::FindResultA()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped Points: %d"), OverlappedPoints.Num());
-	return OverlappedPoints.Num();
+	return FString::FromInt(OverlappedPoints.Num());
 }
 
-FString ADay03::FindResultB()
+FString ADay03::CalculateResultB()
 {
 	auto Lines = LoadInputLines();
 	TArray<FClaim> Claims;
@@ -68,29 +89,9 @@ FString ADay03::FindResultB()
 		if (!IntersectionFound)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Claim with ID %d does not overlap with any other claim."), Claim.ID);
+			return FString::FromInt(Claim.ID);
 		}
 	}
 
 	return FString();
-}
-
-FClaim ADay03::ParseLine(FString Line)
-{
-	FClaim Result;
-
-	FRegexPattern Pattern(TEXT("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)"));
-	FRegexMatcher Matcher(Pattern, Line);
-
-	if (Matcher.FindNext())
-	{
-		auto ID = FCString::Atoi(*Matcher.GetCaptureGroup(1));
-		auto Left = FCString::Atoi(*Matcher.GetCaptureGroup(2));
-		auto Top = FCString::Atoi(*Matcher.GetCaptureGroup(3));
-		auto Width = FCString::Atoi(*Matcher.GetCaptureGroup(4));
-		auto Height = FCString::Atoi(*Matcher.GetCaptureGroup(5));
-		Result.ID = ID;
-		Result.Rectangle = FIntRect(Left, Top, Left + Width, Top + Height);
-	}
-
-	return Result;
 }

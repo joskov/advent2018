@@ -4,12 +4,7 @@
 
 
 
-int ADay01::FindResult()
-{
-	return 0;
-}
-
-int ADay01::FindResultA()
+FString ADay01::CalculateResultA()
 {
 	int Result = 0;
 	auto Lines = LoadInputLines();
@@ -17,10 +12,11 @@ int ADay01::FindResultA()
 	{
 		Result += FCString::Atoi(*Line);
 	}
-	return Result;
+
+	return FString::FromInt(Result);
 }
 
-int ADay01::FindResultB()
+FString ADay01::CalculateResultB()
 {
 	int Frequency = 0;
 	bool FoundDuplicate = false;
@@ -46,8 +42,8 @@ int ADay01::FindResultB()
 			FrequencyList.Add(Frequency);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("%d"), Frequency);
+		// UE_LOG(LogTemp, Warning, TEXT("%d"), Frequency);
 	}
 
-	return Frequency;
+	return FString::FromInt(Frequency);
 }

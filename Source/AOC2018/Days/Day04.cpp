@@ -14,51 +14,14 @@ ADay04::ADay04()
 
 int ADay04::FindResultA()
 {
-	auto Lines = LoadInputLines();
-	auto Logs = LogsFromLines(Lines);
 	
-	TMap<int32, int32> SleepTotals;
-	TMap<int32, TArray<FSleep>> SleepLogs;
-	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
-
-	auto TopKey = ADayBase::GetFirstKey(SleepTotals);
-	if (!ensure(SleepLogs.Contains(TopKey))) { return 0; }
-
-	auto FilteredSleepLogs = SleepLogs[TopKey];
-	auto MinutesList = GetMinutesList(FilteredSleepLogs);
-	auto MaxMinuteKey = ADayBase::GetFirstKey(MinutesList);
-
-	UE_LOG(LogTemp, Warning, TEXT("TopKey: %d. MaxMinute: %d."), TopKey, MaxMinuteKey);
-
-	UE_LOG(LogTemp,  Warning, TEXT("Result A: %d"), MaxMinuteKey * TopKey);
 
 	return 0;
 }
 
 int ADay04::FindResultB()
 {
-	auto Lines = LoadInputLines();
-	auto Logs = LogsFromLines(Lines);
-
-	TMap<int32, int32> SleepTotals; // We don't need them here
-	TMap<int32, TArray<FSleep>> SleepLogs;
-	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
-
-	TTuple<int32, int32> CurrentBest;
-	int32 CurrentBestID;
-	for (auto SleepLog : SleepLogs)
-	{
-		auto MaxMinute = GetMaxMinute(SleepLog.Value);
-		UE_LOG(LogTemp, Warning, TEXT("Guard #%d. MaxMinute: %d. MaxTimes: %d."), SleepLog.Key, MaxMinute.Key, MaxMinute.Value);
-
-		if (MaxMinute.Value > CurrentBest.Value)
-		{
-			CurrentBest = MaxMinute;
-			CurrentBestID = SleepLog.Key;
-		}
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Result B: %d"), CurrentBest.Key * CurrentBestID);
+	
 
 	return 0;
 }
@@ -161,4 +124,55 @@ FGuardTime ADay04::ParseTime(FString Line)
 	Result.Minute = FCString::Atoi(*Line.RightChop(15).Left(2));
 
 	return Result;
+}
+
+FString ADay04::CalculateResultA()
+{
+	auto Lines = LoadInputLines();
+	auto Logs = LogsFromLines(Lines);
+
+	TMap<int32, int32> SleepTotals;
+	TMap<int32, TArray<FSleep>> SleepLogs;
+	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
+
+	auto TopKey = ADayBase::GetFirstKey(SleepTotals);
+	if (!ensure(SleepLogs.Contains(TopKey))) { return FString(); }
+
+	auto FilteredSleepLogs = SleepLogs[TopKey];
+	auto MinutesList = GetMinutesList(FilteredSleepLogs);
+	auto MaxMinuteKey = ADayBase::GetFirstKey(MinutesList);
+
+	UE_LOG(LogTemp, Warning, TEXT("TopKey: %d. MaxMinute: %d."), TopKey, MaxMinuteKey);
+
+	UE_LOG(LogTemp, Warning, TEXT("Result A: %d"), MaxMinuteKey * TopKey);
+
+	return FString::FromInt(MaxMinuteKey * TopKey);
+}
+
+FString ADay04::CalculateResultB()
+{
+	auto Lines = LoadInputLines();
+	auto Logs = LogsFromLines(Lines);
+
+	TMap<int32, int32> SleepTotals; // We don't need them here
+	TMap<int32, TArray<FSleep>> SleepLogs;
+	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
+
+	TTuple<int32, int32> CurrentBest;
+	int32 CurrentBestID;
+	for (auto SleepLog : SleepLogs)
+	{
+		auto MaxMinute = GetMaxMinute(SleepLog.Value);
+		UE_LOG(LogTemp, Warning, TEXT("Guard #%d. MaxMinute: %d. MaxTimes: %d."), SleepLog.Key, MaxMinute.Key, MaxMinute.Value);
+
+		if (MaxMinute.Value > CurrentBest.Value)
+		{
+			CurrentBest = MaxMinute;
+			CurrentBestID = SleepLog.Key;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Result B: %d"), CurrentBest.Key * CurrentBestID);
+
+	return FString::FromInt(CurrentBest.Key * CurrentBestID);
 }

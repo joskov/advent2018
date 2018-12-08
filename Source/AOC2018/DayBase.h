@@ -44,7 +44,17 @@ public:
 	// TODO: refactor to a template
 	static int32 GetFirstKey(TMap<int32, int32> Map);
 
+	UFUNCTION(BlueprintCallable, Category = Advent)
+	FString GetResultA();
+
+	UFUNCTION(BlueprintCallable, Category = Advent)
+	FString GetResultB();
+
 protected:
 	FString InputFileName = FString("Input/input01.txt");
+
+	virtual FString CalculateResultA();
+
+	virtual FString CalculateResultB();
 
 };

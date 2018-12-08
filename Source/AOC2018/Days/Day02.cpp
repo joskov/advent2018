@@ -9,7 +9,7 @@ ADay02::ADay02()
 	InputFileName = FString("Input/input02.txt");
 }
 
-int ADay02::FindResultA()
+FString ADay02::CalculateResultA()
 {
 	int Doubles = 0;
 	int Tripples = 0;
@@ -39,10 +39,10 @@ int ADay02::FindResultA()
 		}
 	}
 
-	return Doubles * Tripples;
+	return FString::FromInt(Doubles * Tripples);
 }
 
-FString ADay02::FindResultB()
+FString ADay02::CalculateResultB()
 {
 	auto Lines = LoadInputLines();
 	FString Result;

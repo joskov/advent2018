@@ -104,4 +104,8 @@ protected:
 
 	TTuple<int32, int32> GetMaxMinute(TArray<FSleep> SleepLog);
 
+protected:
+	virtual FString CalculateResultA() override;
+	virtual FString CalculateResultB() override;
+
 };

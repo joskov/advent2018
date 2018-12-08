@@ -15,12 +15,10 @@ class AOC2018_API ADay02 : public ADayBase
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintPure)
-	int FindResultA();
-
-	UFUNCTION(BlueprintPure)
-	FString FindResultB();
-
 	ADay02();
+
+protected:
+	virtual FString CalculateResultA() override;
+	virtual FString CalculateResultB() override;
 
 };

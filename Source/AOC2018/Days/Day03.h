@@ -39,15 +39,12 @@ class AOC2018_API ADay03 : public ADayBase
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintPure)
-	int FindResultA();
-
-	UFUNCTION(BlueprintPure)
-	FString FindResultB();
-
 	ADay03();
 
 private:
 	FClaim ParseLine(FString Line);
 
+protected:
+	virtual FString CalculateResultA() override;
+	virtual FString CalculateResultB() override;
 };

@@ -79,3 +79,27 @@ int32 ADayBase::GetFirstKey(TMap<int32, int32> Map)
 	return Result.Key;
 }
 
+FString ADayBase::GetResultA()
+{
+	auto Result = CalculateResultA();
+	UE_LOG(LogTemp, Warning, TEXT("(%s) Result A: %s."), *GetClass()->GetName(), *Result);
+	return Result;
+}
+
+FString ADayBase::GetResultB()
+{
+	auto Result = CalculateResultB();
+	UE_LOG(LogTemp, Warning, TEXT("(%s) Result B: %s."), *GetClass()->GetName(), *Result);
+	return Result;
+}
+
+FString ADayBase::CalculateResultA()
+{
+	return FString();
+}
+
+FString ADayBase::CalculateResultB()
+{
+	return FString();
+}
+
