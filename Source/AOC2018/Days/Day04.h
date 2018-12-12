@@ -85,12 +85,6 @@ class AOC2018_API ADay04 : public ADayBase
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintPure)
-	int FindResultA();
-
-	UFUNCTION(BlueprintPure)
-	int FindResultB();
-
 	ADay04();
 
 protected:

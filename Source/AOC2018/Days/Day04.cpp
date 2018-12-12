@@ -12,20 +12,6 @@ ADay04::ADay04()
 	InputFileName = FString("Input/input04.txt");
 }
 
-int ADay04::FindResultA()
-{
-	
-
-	return 0;
-}
-
-int ADay04::FindResultB()
-{
-	
-
-	return 0;
-}
-
 TTuple<int32, int32> ADay04::GetMaxMinute(TArray<FSleep> SleepLog)
 {
 	auto MinutesList = GetMinutesList(SleepLog);
