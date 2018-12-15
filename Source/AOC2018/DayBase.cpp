@@ -55,28 +55,40 @@ TArray<FString> ADayBase::LoadInputLines()
 	return Strings;
 }
 
-
-/*
 template<class K, class V>
-TPair<K, V> ADayBase::GetFirstPair(TMap<K, V> Map)
+K ADayBase::GetFirstKey(TMap<K, V> Map)
 {
-	TArray<K> SleepTotalsKeys;
-	TArray<V> SleepTotalsValues;
-	SleepTotals.GetKeys(SleepTotalsKeys);
-	SleepTotals.GetValues(SleepTotalsValues);
-	return TPair<K, V>(SleepTotalsKeys[0], SleepTotalsValues[0]);
+	K Default;
+	TArray<K> MapKeys;
+	SleepTotals.GetKeys(MapKeys);
+	if (MapKeys.Num() == 0)
+	{
+		return Default;
+	}
+	return MapKeys[0];
 }
-*/
 
+template<>
 int32 ADayBase::GetFirstKey(TMap<int32, int32> Map)
 {
-	TTuple<int32, int32> Result;
+	int32 Result;
 	for (auto Pair : Map)
 	{
-		Result = Pair;
+		Result = Pair.Key;
 		break;
 	}
-	return Result.Key;
+	return Result;
+}
+
+FIntPoint ADayBase::GetFirstKey(TMap<FIntPoint, int32> Map)
+{
+	FIntPoint Result;
+	for (auto Pair : Map)
+	{
+		Result = Pair.Key;
+		break;
+	}
+	return Result;
 }
 
 FString ADayBase::GetResultA()

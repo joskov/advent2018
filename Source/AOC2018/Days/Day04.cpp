@@ -15,7 +15,7 @@ ADay04::ADay04()
 TTuple<int32, int32> ADay04::GetMaxMinute(TArray<FSleep> SleepLog)
 {
 	auto MinutesList = GetMinutesList(SleepLog);
-	auto FirstKey = ADayBase::GetFirstKey(MinutesList);
+	auto FirstKey = GetFirstKey(MinutesList);
 	auto MaxTuple = TTuple<int32, int32>(FirstKey, *MinutesList.Find(FirstKey));
 	return MaxTuple;
 }
@@ -121,12 +121,12 @@ FString ADay04::CalculateResultA()
 	TMap<int32, TArray<FSleep>> SleepLogs;
 	GetSleepLogs(OUT SleepTotals, OUT SleepLogs, Logs);
 
-	auto TopKey = ADayBase::GetFirstKey(SleepTotals);
+	auto TopKey = GetFirstKey(SleepTotals);
 	if (!ensure(SleepLogs.Contains(TopKey))) { return FString(); }
 
 	auto FilteredSleepLogs = SleepLogs[TopKey];
 	auto MinutesList = GetMinutesList(FilteredSleepLogs);
-	auto MaxMinuteKey = ADayBase::GetFirstKey(MinutesList);
+	auto MaxMinuteKey = GetFirstKey(MinutesList);
 
 	UE_LOG(LogTemp, Warning, TEXT("TopKey: %d. MaxMinute: %d."), TopKey, MaxMinuteKey);
 

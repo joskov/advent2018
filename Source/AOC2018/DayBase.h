@@ -39,10 +39,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = Input)
 	TArray<FString> LoadInputLines();
 
-	// template<class K, class V>
-	// static TPair<K, V> GetFirstPair(TMap<K, V> Map);
-	// TODO: refactor to a template
-	static int32 GetFirstKey(TMap<int32, int32> Map);
+	// TODO: Fix templates
+	template<class K, class V>
+	K GetFirstKey(TMap<K, V> Map);
+	template<>
+	int32 GetFirstKey(TMap<int32, int32> Map);
+	FIntPoint GetFirstKey(TMap<FIntPoint, int32> Map);
 
 	UFUNCTION(BlueprintCallable, Category = Advent)
 	FString GetResultA();
