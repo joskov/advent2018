@@ -7,6 +7,7 @@
 ADay06::ADay06()
 {
 	InputFileName = FString("Input/input06.txt");
+	TotalDistanceLessThan = 10000;
 }
 
 FString ADay06::CalculateResultA()
@@ -75,12 +76,59 @@ FString ADay06::CalculateResultA()
 	return FString::FromInt(Totals[FirstKey]);
 }
 
+FString ADay06::CalculateResultB()
+{
+	auto Lines = LoadInputLines();
+	if (Lines.Num() == 0) { return "Error"; }
+
+	TArray<FIntPoint> Points;
+	for (auto Line : Lines)
+	{
+		auto Point = ParsePoint(Line);
+		Points.Add(Point);
+	}
+
+	FIntPoint Min = Points[0];
+	FIntPoint Max = Points[0];
+	for (auto Point : Points)
+	{
+		// UE_LOG(LogTemp, Warning, TEXT("Checking Point: %s"), *Point.ToString());
+		Min.X = FMath::Min(Min.X, Point.X);
+		Min.Y = FMath::Min(Min.Y, Point.Y);
+		Max.X = FMath::Max(Max.X, Point.X);
+		Max.Y = FMath::Max(Max.Y, Point.Y);
+	}
+
+	TArray<FIntPoint> ResultPoints;
+	for (auto X = Min.X; X < Max.X; ++X)
+	{
+		for (auto Y = Min.Y; Y < Max.Y; ++Y)
+		{
+			int32 TotalDistance = 0;
+			auto Target = FIntPoint(X, Y);
+			for (auto Point : Points)
+			{
+				auto Distance = FindDistance(Point, Target);
+				// UE_LOG(LogTemp, Warning, TEXT("Point(%s) Target(%s) Distance(%d)"), *Point.ToString(), *Target.ToString(), Distance);
+				TotalDistance += Distance;
+			}
+			// UE_LOG(LogTemp, Warning, TEXT("Target(%s) TotalDistance(%d)"), *Target.ToString(), TotalDistance);
+			if (TotalDistance < TotalDistanceLessThan)
+			{
+				ResultPoints.Add(Target);
+			}
+		}
+	}
+
+	return FString::FromInt(ResultPoints.Num());
+}
+
 bool ADay06::GetClosestPoint(TArray<FIntPoint> Points, FIntPoint Target, FIntPoint& OutClosestPoint)
 {
 	TMap<FIntPoint, int32> RangesMap;
 	for (auto Point : Points)
 	{
-		RangesMap.Add(Point, FMath::Abs(Point.X - Target.X) + FMath::Abs(Point.Y - Target.Y));
+		RangesMap.Add(Point, FindDistance(Point, Target));
 	}
 	RangesMap.ValueSort(std::less<int32>());
 
@@ -97,6 +145,21 @@ bool ADay06::GetClosestPoint(TArray<FIntPoint> Points, FIntPoint Target, FIntPoi
 	
 	OutClosestPoint = RangesKeys[0];
 	return true;
+}
+
+int32 ADay06::FindDistance(FIntPoint A, FIntPoint B)
+{
+	return FMath::Abs(A.X - B.X) + FMath::Abs(A.Y - B.Y);
+}
+
+int32 ADay06::GetTotalDistance(TArray<FIntPoint> Points, FIntPoint Target)
+{
+	int32 TotalDistance = 0;
+	for (auto Point : Points)
+	{
+		TotalDistance += FMath::Abs(Point.X - Target.X) + FMath::Abs(Point.Y - Target.Y);
+	}
+	return TotalDistance;
 }
 
 TArray<FIntPoint> ADay06::GetPointsClosestToEdge(TArray<FIntPoint> Points, FIntPoint Min, FIntPoint Max)
@@ -125,14 +188,6 @@ TArray<FIntPoint> ADay06::GetPointsClosestToEdge(TArray<FIntPoint> Points, FIntP
 	}
 
 	return Result;
-}
-
-FString ADay06::CalculateResultB()
-{
-	auto Lines = LoadInputLines();
-	if (Lines.Num() == 0) { return "Error"; }
-
-	return FString::FromInt(0);
 }
 
 FIntPoint ADay06::ParsePoint(FString Input)

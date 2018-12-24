@@ -17,6 +17,8 @@ class AOC2018_API ADay06 : public ADayBase
 public:
 	ADay06();
 
+	static int32 FindDistance(FIntPoint A, FIntPoint B);
+
 protected:
 	virtual FString CalculateResultA() override;
 	virtual FString CalculateResultB() override;
@@ -25,5 +27,8 @@ protected:
 
 	bool GetClosestPoint(TArray<FIntPoint> Points, FIntPoint Target, FIntPoint& OutClosestPoint);
 	TArray<FIntPoint> GetPointsClosestToEdge(TArray<FIntPoint> Points, FIntPoint Min, FIntPoint Max);
+	int32 GetTotalDistance(TArray<FIntPoint> Points, FIntPoint Target);
+
+	int32 TotalDistanceLessThan = 0;
 
 };
