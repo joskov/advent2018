@@ -23,6 +23,13 @@ protected:
 
 	static bool ParseLine(FString Input, FString& OutLeft, FString& OutRight);
 
+	void ParseInput(TArray<FString> Input);
+
 	static FString ConcatArray(TArray<FString> Array);
 
+	int32 MaxWorkers;
+	int32 WaitTime;
+
+	TMap<FString, TSet<FString>> WaitMap;
+	TArray<FString> AllTasks;
 };

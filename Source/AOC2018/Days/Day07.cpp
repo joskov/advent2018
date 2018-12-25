@@ -6,45 +6,18 @@
 ADay07::ADay07()
 {
 	InputFileName = FString("Input/input07.txt");
+	MaxWorkers = 5;
+	WaitTime = 60;
+
+	auto Lines = LoadInputLines();
+	ParseInput(Lines);
 }
 
 FString ADay07::CalculateResultA()
 {
-	auto Lines = LoadInputLines();
-	if (Lines.Num() == 0) { return "Error"; }
-
-	TMap<FString, TSet<FString>> WaitMap;
-	TArray<FString> AllTasks;
-
-	for (auto Line : Lines)
-	{
-		// UE_LOG(LogTemp, Warning, TEXT("Line: %s"), *Line);
-		FString Left;
-		FString Right;
-		auto Parsed = ParseLine(Line, OUT Left, OUT Right);
-		if (!Parsed)
-		{
-			continue;
-		}
-
-		AllTasks.AddUnique(Left);
-		AllTasks.AddUnique(Right);
-		if (!WaitMap.Contains(Right))
-		{
-			WaitMap.Add(Right, TSet<FString>());
-		}
-		WaitMap[Right].Add(Left);
-	}
-	AllTasks.Sort(std::less<FString>());
-
-	TArray<FString> WaitKeys;
-	WaitMap.KeySort(std::less<FString>());
-	WaitMap.GetKeys(OUT WaitKeys);
-	auto WaitSet = TSet<FString>(WaitKeys);
 	TSet<FString> RootSet;
 	TArray<FString> Result;
 	
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), *ConcatArray(Result));
 	bool SetChanged;
 	do
 	{
@@ -76,7 +49,79 @@ FString ADay07::CalculateResultA()
 
 FString ADay07::CalculateResultB()
 {
-	return FString();
+	int32 Step = 0;
+	TSet<FString> RootSet;
+	TMap<FString, int32> Workers;
+
+	bool SetChanged;
+	do
+	{
+		TArray<FString> Completed;
+		for (auto Worker : Workers)
+		{
+			if (Worker.Value <= 0)
+			{
+				Completed.Add(Worker.Key);
+			}
+		}
+
+		for (auto Task : Completed)
+		{
+			RootSet.Add(Task);
+			Workers.Remove(Task);
+		}
+
+		SetChanged = false;
+		for (auto Task : AllTasks)
+		{
+			// Workers are busy
+			if (Workers.Num() >= MaxWorkers)
+			{
+				continue;
+			}
+
+			// Check if already in root set
+			if (RootSet.Contains(Task))
+			{
+				continue;
+			}
+
+			// Working on it
+			if (Workers.Contains(Task))
+			{
+				continue;
+			}
+
+			// Check if blocked
+			if (WaitMap.Contains(Task) && WaitMap[Task].Difference(RootSet).Num() != 0)
+			{
+				continue;
+			}
+
+			auto FirstChar = Task.GetCharArray()[0];
+			auto TimeRequired = FirstChar - TCHAR('A') + 1 + WaitTime;
+			// UE_LOG(LogTemp, Warning, TEXT("Time for %s = %d"), *Task, TimeRequired);
+
+			Workers.Add(Task, TimeRequired);
+			SetChanged = true;
+		}
+
+		for (auto Worker : Workers)
+		{
+			Workers[Worker.Key] = Workers[Worker.Key] - 1;
+		}
+
+		// UE_LOG(LogTemp, Warning, TEXT("Second: %d, Done %s."), Step, *ConcatArray(RootSet.Array()));
+
+		if (Workers.Num() == 0 && !SetChanged)
+		{
+			break;
+		}
+
+		Step += 1;
+	} while (true);
+
+	return FString::FromInt(Step);
 }
 
 bool ADay07::ParseLine(FString Input, FString& OutLeft, FString& OutRight)
@@ -97,6 +142,34 @@ bool ADay07::ParseLine(FString Input, FString& OutLeft, FString& OutRight)
 		return false;
 	}
 
+}
+
+void ADay07::ParseInput(TArray<FString> Input)
+{
+	WaitMap.Empty();
+	AllTasks.Empty();
+
+	for (auto Line : Input)
+	{
+		// UE_LOG(LogTemp, Warning, TEXT("Line: %s"), *Line);
+		FString Left;
+		FString Right;
+		auto Parsed = ParseLine(Line, OUT Left, OUT Right);
+		if (!Parsed)
+		{
+			continue;
+		}
+
+		AllTasks.AddUnique(Left);
+		AllTasks.AddUnique(Right);
+		if (!WaitMap.Contains(Right))
+		{
+			WaitMap.Add(Right, TSet<FString>());
+		}
+		WaitMap[Right].Add(Left);
+	}
+
+	AllTasks.Sort(std::less<FString>());
 }
 
 FString ADay07::ConcatArray(TArray<FString> Array)
