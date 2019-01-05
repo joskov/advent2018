@@ -27,4 +27,6 @@ protected:
 
 	void IterateElements(int32 Count, int32& IteratorIndex, int32& MetaSum);
 
+	int32 ValueSum(int32& IteratorIndex);
+
 };
