@@ -20,6 +20,8 @@ public:
 protected:
 	virtual FString CalculateResultA() override;
 	virtual FString CalculateResultB() override;
+
+	int32 GetMaxScore(int Marbles);
 	
 	int Players;
 	int LastMarble;

@@ -14,13 +14,29 @@ ADay09::ADay09()
 
 FString ADay09::CalculateResultA()
 {
+	auto MaxScore = GetMaxScore(LastMarble);
+
+	return FString::FromInt(MaxScore);
+}
+
+FString ADay09::CalculateResultB()
+{
+	auto MaxScore = GetMaxScore(LastMarble * 3);
+
+	return FString::FromInt(MaxScore);
+}
+
+int32 ADay09::GetMaxScore(int Marbles)
+{
+	double StartTime = FPlatformTime::Seconds();
+
 	TArray<int> Board;
 	TMap<int, int32> PlayerScores;
 	Board.Add(0);
 	int CurrentIndex = 0;
 	int CurrentPlayer = 0;
 
-	for (int Marble = 1; Marble <= LastMarble; ++Marble)
+	for (int Marble = 1; Marble <= Marbles; ++Marble)
 	{
 		if (Marble % 23 == 0)
 		{
@@ -68,12 +84,8 @@ FString ADay09::CalculateResultA()
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Check"));
+	double EndTime = FPlatformTime::Seconds();
+	UE_LOG(LogTemp, Warning, TEXT("Calculation time %f.2s"), EndTime - StartTime);
 
-	return FString::FromInt(MaxScore);
-}
-
-FString ADay09::CalculateResultB()
-{
-	return FString::FromInt(2);
+	return MaxScore;
 }
