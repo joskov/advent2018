@@ -16,66 +16,95 @@ FString ADay09::CalculateResultA()
 {
 	auto MaxScore = GetMaxScore(LastMarble);
 
-	return FString::FromInt(MaxScore);
+	return FString::Printf(TEXT("%lld"), MaxScore);
 }
 
 FString ADay09::CalculateResultB()
 {
-	auto MaxScore = GetMaxScore(LastMarble * 3);
+	auto MaxScore = GetMaxScore(LastMarble * 100);
 
-	return FString::FromInt(MaxScore);
+	return FString::Printf(TEXT("%lld"), MaxScore);
 }
 
-int32 ADay09::GetMaxScore(int Marbles)
+int64 ADay09::GetMaxScore(int32 Marbles)
 {
 	double StartTime = FPlatformTime::Seconds();
 
-	TArray<int> Board;
-	TMap<int, int32> PlayerScores;
-	Board.Add(0);
-	int CurrentIndex = 0;
+	TDoubleLinkedList<int32> Board;
+	Board.AddTail(0);
+	auto BoardIterator = Board.GetTail();
+
+	TMap<int32, int64> PlayerScores;
 	int CurrentPlayer = 0;
 
 	for (int Marble = 1; Marble <= Marbles; ++Marble)
 	{
 		if (Marble % 23 == 0)
 		{
-			// UE_LOG(LogTemp, Warning, TEXT("Add Score: %d"), Marble);
-			CurrentIndex = (CurrentIndex - 7) % Board.Num();
-			if (CurrentIndex < 0)
+			// Move right 7 positions (or cycle)
+			for (auto Iterator = 0; Iterator < 7; ++Iterator)
 			{
-				CurrentIndex = Board.Num() + CurrentIndex;
+				if (BoardIterator == Board.GetTail())
+				{
+					BoardIterator = Board.GetHead();
+				}
+				else
+				{
+					BoardIterator = BoardIterator->GetNextNode();
+				}
 			}
 
 			// Add score
+			auto BoardItem = (*BoardIterator).GetValue();
 			auto OldScore = PlayerScores.Contains(CurrentPlayer) ? PlayerScores[CurrentPlayer] : 0;
-			PlayerScores.Add(CurrentPlayer, OldScore + Marble + Board[CurrentIndex]);
+			PlayerScores.Add(CurrentPlayer, OldScore + Marble + BoardItem);
 
-			Board.RemoveAt(CurrentIndex);
-			CurrentIndex = CurrentIndex % Board.Num();
+			// Remove node
+			if (BoardIterator == Board.GetTail())
+			{
+				Board.RemoveNode(BoardIterator);
+				BoardIterator = Board.GetHead();
+			}
+			else
+			{
+				auto GetPrevNode = BoardIterator->GetPrevNode();
+				Board.RemoveNode(BoardIterator);
+				BoardIterator = GetPrevNode;
+			}
 		}
 		else
 		{
-			CurrentIndex = ((CurrentIndex + 1) % Board.Num()) + 1;
-			Board.Insert(Marble, CurrentIndex);
+			// Move one left (or cycle)
+			if (BoardIterator == Board.GetHead())
+			{
+				BoardIterator = Board.GetTail();
+			}
+			else
+			{
+				BoardIterator = BoardIterator->GetPrevNode();
+			}
+
+			// Insert before current and move one left
+			Board.InsertNode(Marble, BoardIterator);
+			BoardIterator = BoardIterator->GetPrevNode();
 		}
 
 		// UE_LOG(LogTemp, Warning, TEXT("Marble: %d; Index: %d"), Marble, CurrentIndex);
 
 		/*
 		FString DebugPrint;
-		for (auto Marble : Board)
-		{
-			DebugPrint.Append(FString::FromInt(Marble));
+		for (auto Item : Board) {
+			DebugPrint.Append(FString::FromInt(Item));
 			DebugPrint.Append(" ");
 		}
+		UE_LOG(LogTemp, Warning, TEXT("Current: %d"), (*BoardIterator).GetValue());
 		UE_LOG(LogTemp, Warning, TEXT("Debug: %s"), *DebugPrint);
 		*/
 
 		CurrentPlayer = (CurrentPlayer + 1) % Players;
 	}
 
-	int MaxScore = 0;
+	int64 MaxScore = 0;
 	for (auto ScorePair : PlayerScores)
 	{
 		if (ScorePair.Value > MaxScore)
