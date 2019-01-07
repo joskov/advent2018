@@ -75,44 +75,36 @@ void ADay10::DisplayPoints(TArray<FMovingPoint> Points, int32 SecondsPassed)
 
 	UE_LOG(LogTemp, Warning, TEXT("%ds"), SecondsPassed);
 
-	auto Min = Points[0].Position + Points[0].Velocity * SecondsPassed;
-	auto Max = Points[0].Position + Points[0].Velocity * SecondsPassed;
+	auto Min = Points[0].Move(SecondsPassed);
+	auto Max = Min;
+	
+	/// Find min and max and convert points
 	TMap<int32, TArray<int32>> ConvertedPoints;
-	// Convert points and find min and max
 	for (auto Point : Points)
 	{
-		auto X = Point.Position.X + Point.Velocity.X * SecondsPassed;
-		auto Y = Point.Position.Y + Point.Velocity.Y * SecondsPassed;
-		if (X < Min.X)
+		auto MovedPoint = Point.Move(SecondsPassed);
+		if (MovedPoint.X < Min.X)
 		{
-			Min.X = X;
+			Min.X = MovedPoint.X;
 		}
-		if (Y < Min.Y)
+		if (MovedPoint.Y < Min.Y)
 		{
-			Min.Y = Y;
+			Min.Y = MovedPoint.Y;
 		}
-		if (X > Max.X)
+		if (MovedPoint.X > Max.X)
 		{
-			Max.X = X;
+			Max.X = MovedPoint.X;
 		}
-		if (Y > Max.Y)
+		if (MovedPoint.Y > Max.Y)
 		{
-			Max.Y = Y;
+			Max.Y = MovedPoint.Y;
 		}
-	}
 
-	// UE_LOG(LogTemp, Warning, TEXT("Min %s, Max %s"), *Min.ToString(), *Max.ToString());
-
-	for (auto Point : Points)
-	{
-		auto X = Point.Position.X + Point.Velocity.X * SecondsPassed;
-		auto Y = Point.Position.Y + Point.Velocity.Y * SecondsPassed;
-
-		if (!ConvertedPoints.Contains(X))
+		if (!ConvertedPoints.Contains(MovedPoint.X))
 		{
-			ConvertedPoints.Add(X);
+			ConvertedPoints.Add(MovedPoint.X);
 		}
-		ConvertedPoints[X].Add(Y);
+		ConvertedPoints[MovedPoint.X].Add(MovedPoint.Y);
 	}
 
 	for (int Y = Min.Y; Y <= Max.Y; ++Y)
@@ -140,28 +132,28 @@ int64 ADay10::DisplayArea(TArray<FMovingPoint> Points, int32 SecondsPassed)
 		return 0;
 	}
 
-	auto Min = Points[0].Position + Points[0].Velocity * SecondsPassed;
-	auto Max = Points[0].Position + Points[0].Velocity * SecondsPassed;
-	// Find min and max
+	auto Min = Points[0].Move(SecondsPassed);
+	auto Max = Min;
+
+	/// Find min and max
 	for (auto Point : Points)
 	{
-		auto X = Point.Position.X + Point.Velocity.X * SecondsPassed;
-		auto Y = Point.Position.Y + Point.Velocity.Y * SecondsPassed;
-		if (X < Min.X)
+		auto MovedPoint = Point.Move(SecondsPassed);
+		if (MovedPoint.X < Min.X)
 		{
-			Min.X = X;
+			Min.X = MovedPoint.X;
 		}
-		if (Y < Min.Y)
+		if (MovedPoint.Y < Min.Y)
 		{
-			Min.Y = Y;
+			Min.Y = MovedPoint.Y;
 		}
-		if (X > Max.X)
+		if (MovedPoint.X > Max.X)
 		{
-			Max.X = X;
+			Max.X = MovedPoint.X;
 		}
-		if (Y > Max.Y)
+		if (MovedPoint.Y > Max.Y)
 		{
-			Max.Y = Y;
+			Max.Y = MovedPoint.Y;
 		}
 	}
 

@@ -12,6 +12,11 @@ struct FMovingPoint
 	FIntPoint Velocity;
 	int32 ID;
 
+	FIntPoint Move(int32 Time)
+	{
+		return Position + Velocity * Time;
+	}
+
 	FString ToString()
 	{
 		return FString::Printf(TEXT("#%d Position %s. Velocity %s."), ID, *Position.ToString(), *Velocity.ToString());
